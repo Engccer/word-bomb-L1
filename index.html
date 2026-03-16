@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Word Bomb - Lesson 1 New Words</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&family=Bangers&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #0a0a2e;
+  --card: #141450;
+  --accent: #ff6b35;
+  --accent2: #ffd700;
+  --correct: #00e676;
+  --wrong: #ff1744;
+  --text: #f0f0f0;
+  --fuse: #ff6b35;
+}
+
+body {
+  font-family: 'Noto Sans KR', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ===== SCREEN: START ===== */
+#start-screen {
+  text-align: center;
+  animation: fadeIn 0.6s ease;
+}
+#start-screen h1 {
+  font-family: 'Bangers', cursive;
+  font-size: 5rem;
+  color: var(--accent);
+  text-shadow: 0 0 40px rgba(255,107,53,0.5), 0 4px 0 #c44a1a;
+  letter-spacing: 4px;
+  margin-bottom: 0.2em;
+}
+#start-screen .subtitle {
+  font-size: 1.4rem;
+  color: var(--accent2);
+  margin-bottom: 2em;
+}
+.bomb-icon {
+  font-size: 6rem;
+  display: block;
+  margin: 0 auto 1em;
+  animation: wobble 2s ease-in-out infinite;
+}
+.start-btn {
+  font-family: 'Bangers', cursive;
+  font-size: 2rem;
+  padding: 0.6em 2em;
+  background: linear-gradient(135deg, var(--accent), #ff8c42);
+  color: #fff;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(255,107,53,0.4);
+  transition: transform 0.2s, box-shadow 0.2s;
+  letter-spacing: 2px;
+}
+.start-btn:hover, .start-btn:focus {
+  transform: scale(1.08);
+  box-shadow: 0 8px 30px rgba(255,107,53,0.6);
+  outline: 3px solid var(--accent2);
+  outline-offset: 4px;
+}
+
+/* ===== SCREEN: GAME ===== */
+#game-screen { display: none; width: 100%; max-width: 900px; padding: 1.5em; }
+
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1em;
+}
+.score-display {
+  font-family: 'Bangers', cursive;
+  font-size: 1.8rem;
+  color: var(--accent2);
+}
+.combo-display {
+  font-family: 'Bangers', cursive;
+  font-size: 1.4rem;
+  color: var(--accent);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.combo-display.active { opacity: 1; }
+.progress-text { font-size: 1rem; color: #888; }
+
+/* BOMB AREA */
+.bomb-area {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5em;
+  margin-bottom: 1.2em;
+}
+.bomb-visual {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  flex-shrink: 0;
+}
+.bomb-body {
+  width: 100px;
+  height: 100px;
+  background: radial-gradient(circle at 35% 35%, #555, #1a1a1a);
+  border-radius: 50%;
+  position: absolute;
+  bottom: 0;
+  left: 10px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+}
+.bomb-fuse {
+  position: absolute;
+  top: 5px;
+  left: 55px;
+  width: 4px;
+  height: 40px;
+  background: var(--fuse);
+  border-radius: 2px;
+  transform-origin: bottom center;
+  animation: fuseFlicker 0.3s ease-in-out infinite alternate;
+}
+.bomb-spark {
+  position: absolute;
+  top: 0;
+  left: 50px;
+  width: 14px;
+  height: 14px;
+  background: radial-gradient(circle, #fff, var(--accent2), transparent);
+  border-radius: 50%;
+  animation: sparkle 0.2s ease-in-out infinite alternate;
+}
+.bomb-visual.exploding .bomb-body {
+  animation: explodeBody 0.5s forwards;
+}
+.bomb-visual.exploding .bomb-fuse,
+.bomb-visual.exploding .bomb-spark { display: none; }
+.bomb-visual.defused .bomb-fuse { background: #555; }
+.bomb-visual.defused .bomb-spark { display: none; }
+
+/* TIMER BAR */
+.timer-container {
+  flex: 1;
+  max-width: 500px;
+}
+.timer-bar-bg {
+  height: 28px;
+  background: #222;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 2px solid #444;
+}
+.timer-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--wrong), var(--accent), var(--accent2));
+  border-radius: 12px;
+  transition: width 0.1s linear;
+  width: 100%;
+}
+.timer-text {
+  text-align: center;
+  font-family: 'Bangers', cursive;
+  font-size: 1.2rem;
+  margin-top: 0.3em;
+  color: var(--accent2);
+}
+
+/* DEFINITION CARD */
+.def-card {
+  background: var(--card);
+  border: 2px solid #333;
+  border-radius: 16px;
+  padding: 1.5em 2em;
+  margin-bottom: 1.2em;
+  min-height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+.def-card .definition {
+  font-size: 1.5rem;
+  line-height: 1.6;
+  color: #ddd;
+}
+
+/* CHOICES */
+.choices {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.8em;
+  margin-bottom: 1em;
+}
+.choice-btn {
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 1.3rem;
+  font-weight: 700;
+  padding: 0.8em 1em;
+  background: var(--card);
+  color: var(--text);
+  border: 2px solid #444;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: left;
+  position: relative;
+}
+.choice-btn .key-hint {
+  display: inline-block;
+  width: 32px;
+  height: 32px;
+  line-height: 32px;
+  text-align: center;
+  background: #333;
+  border-radius: 6px;
+  margin-right: 0.6em;
+  font-family: 'Bangers', cursive;
+  color: var(--accent2);
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+.choice-btn:hover, .choice-btn:focus {
+  border-color: var(--accent2);
+  background: #1c1c60;
+  outline: none;
+  transform: scale(1.03);
+}
+.choice-btn:disabled {
+  cursor: default;
+  transform: none;
+}
+.choice-btn.correct {
+  border-color: var(--correct);
+  background: rgba(0,230,118,0.15);
+  color: var(--correct);
+}
+.choice-btn.wrong {
+  border-color: var(--wrong);
+  background: rgba(255,23,68,0.15);
+  color: var(--wrong);
+}
+
+/* RESULT OVERLAY */
+.result-banner {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  font-family: 'Bangers', cursive;
+  font-size: 4rem;
+  z-index: 100;
+  pointer-events: none;
+  text-shadow: 0 4px 20px rgba(0,0,0,0.5);
+  transition: transform 0.3s cubic-bezier(0.175,0.885,0.32,1.275), opacity 0.3s;
+  opacity: 0;
+}
+.result-banner.show {
+  transform: translate(-50%, -50%) scale(1);
+  opacity: 1;
+}
+
+/* WORD INFO (after answer) */
+.word-info {
+  background: var(--card);
+  border: 2px solid #444;
+  border-radius: 12px;
+  padding: 1em 1.5em;
+  margin-top: 0.8em;
+  display: none;
+  animation: fadeIn 0.4s ease;
+}
+.word-info .word-main {
+  font-family: 'Bangers', cursive;
+  font-size: 2rem;
+  color: var(--accent2);
+  margin-bottom: 0.3em;
+}
+.word-info .word-korean { font-size: 1.2rem; color: #aaa; }
+.word-info .word-example { font-size: 1.1rem; color: #ccc; margin-top: 0.5em; font-style: italic; }
+
+.pron-btn {
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 1rem;
+  padding: 0.4em 1em;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-top: 0.5em;
+  transition: background 0.2s;
+}
+.pron-btn:hover, .pron-btn:focus {
+  background: #ff8c42;
+  outline: 3px solid var(--accent2);
+  outline-offset: 2px;
+}
+
+.next-btn {
+  display: none;
+  font-family: 'Bangers', cursive;
+  font-size: 1.5rem;
+  padding: 0.5em 2em;
+  background: linear-gradient(135deg, var(--accent), #ff8c42);
+  color: #fff;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  margin: 1em auto 0;
+  box-shadow: 0 4px 15px rgba(255,107,53,0.3);
+  transition: transform 0.2s;
+}
+.next-btn:hover, .next-btn:focus {
+  transform: scale(1.06);
+  outline: 3px solid var(--accent2);
+  outline-offset: 4px;
+}
+
+/* ===== SCREEN: END ===== */
+#end-screen {
+  display: none;
+  text-align: center;
+  animation: fadeIn 0.6s ease;
+}
+#end-screen h1 {
+  font-family: 'Bangers', cursive;
+  font-size: 3.5rem;
+  color: var(--accent2);
+  margin-bottom: 0.5em;
+}
+.final-score {
+  font-family: 'Bangers', cursive;
+  font-size: 5rem;
+  color: var(--accent);
+  text-shadow: 0 0 30px rgba(255,107,53,0.4);
+}
+.final-stats { font-size: 1.2rem; color: #aaa; margin: 1em 0 2em; line-height: 2; }
+
+/* EXPLOSION PARTICLES */
+.particle {
+  position: fixed;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 200;
+}
+
+/* CONFETTI */
+.confetti {
+  position: fixed;
+  width: 8px;
+  height: 18px;
+  pointer-events: none;
+  z-index: 200;
+}
+
+/* SR ONLY */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ANIMATIONS */
+@keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes wobble {
+  0%, 100% { transform: rotate(-3deg); }
+  50% { transform: rotate(3deg); }
+}
+@keyframes fuseFlicker {
+  from { opacity: 0.7; }
+  to { opacity: 1; }
+}
+@keyframes sparkle {
+  from { transform: scale(0.8); opacity: 0.6; }
+  to { transform: scale(1.3); opacity: 1; }
+}
+@keyframes explodeBody {
+  0% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.5); opacity: 0.8; }
+  100% { transform: scale(0); opacity: 0; }
+}
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-8px); }
+  40% { transform: translateX(8px); }
+  60% { transform: translateX(-5px); }
+  80% { transform: translateX(5px); }
+}
+</style>
+<script src="audio_data.js"></script>
+</head>
+<body>
+
+<!-- LIVE REGION for screen readers -->
+<div id="sr-announce" class="sr-only" aria-live="assertive" aria-atomic="true"></div>
+
+<!-- ===== START SCREEN ===== -->
+<div id="start-screen" role="main" aria-label="Word Bomb 게임 시작 화면">
+  <span class="bomb-icon" aria-hidden="true">💣</span>
+  <h1>WORD BOMB</h1>
+  <p class="subtitle">Lesson 1 - New Words</p>
+  <p style="color:#888; margin-bottom:1.5em; font-size:1.1rem;">영영 풀이를 읽고 올바른 단어를 맞추세요!</p>
+  <button class="start-btn" id="start-btn" autofocus>SPACE to START</button>
+  <p style="color:#666; margin-top:1.5em; font-size:0.9rem;">
+    조작: <kbd>1</kbd>~<kbd>4</kbd> 선택 &nbsp;|&nbsp; <kbd>R</kbd> 발음 듣기 &nbsp;|&nbsp; <kbd>Space</kbd> 다음
+  </p>
+</div>
+
+<!-- ===== GAME SCREEN ===== -->
+<div id="game-screen" role="main" aria-label="Word Bomb 게임">
+  <div class="top-bar">
+    <div>
+      <span class="score-display" aria-label="점수">SCORE: <span id="score-val">0</span></span>
+      <span class="combo-display" id="combo-display" aria-label="콤보">COMBO x1</span>
+    </div>
+    <span class="progress-text" id="progress-text" aria-label="진행 상황">1 / 22</span>
+  </div>
+
+  <div class="bomb-area">
+    <div class="bomb-visual" id="bomb-visual" aria-hidden="true">
+      <div class="bomb-spark" id="bomb-spark"></div>
+      <div class="bomb-fuse" id="bomb-fuse"></div>
+      <div class="bomb-body"></div>
+    </div>
+    <div class="timer-container">
+      <div class="timer-bar-bg" role="progressbar" aria-label="남은 시간" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100">
+        <div class="timer-bar-fill" id="timer-fill"></div>
+      </div>
+      <div class="timer-text" id="timer-text">15s</div>
+    </div>
+  </div>
+
+  <div class="def-card" id="def-card" tabindex="-1">
+    <p class="definition" id="definition-text"></p>
+  </div>
+
+  <div class="choices" id="choices" role="group" aria-label="선택지">
+    <button class="choice-btn" data-idx="0"><span class="key-hint" aria-hidden="true">1</span><span class="choice-text"></span></button>
+    <button class="choice-btn" data-idx="1"><span class="key-hint" aria-hidden="true">2</span><span class="choice-text"></span></button>
+    <button class="choice-btn" data-idx="2"><span class="key-hint" aria-hidden="true">3</span><span class="choice-text"></span></button>
+    <button class="choice-btn" data-idx="3"><span class="key-hint" aria-hidden="true">4</span><span class="choice-text"></span></button>
+  </div>
+
+  <div class="word-info" id="word-info" tabindex="-1">
+    <div class="word-main" id="info-word"></div>
+    <div class="word-korean" id="info-korean"></div>
+    <div class="word-example" id="info-example"></div>
+    <button class="pron-btn" id="pron-btn" aria-label="발음 듣기 (R키)">🔊 발음 듣기 (R)</button>
+  </div>
+
+  <button class="next-btn" id="next-btn">SPACE &rarr; NEXT</button>
+</div>
+
+<!-- RESULT BANNER -->
+<div class="result-banner" id="result-banner" aria-hidden="true"></div>
+
+<!-- ===== END SCREEN ===== -->
+<div id="end-screen" role="main" aria-label="게임 결과">
+  <h1>GAME OVER!</h1>
+  <div class="final-score" id="final-score">0</div>
+  <div style="color:#888; font-size:1.2rem;">POINTS</div>
+  <div class="final-stats" id="final-stats"></div>
+  <button class="start-btn" id="restart-btn">PLAY AGAIN</button>
+</div>
+
+<script>
+// ===== VOCABULARY DATA =====
+const VOCAB = [
+  { word: "all the time", korean: "내내, 아주 자주", eng_def: "at all times; continuously or very often", example: "He forgets his homework all the time.", audio: "all_the_time.wav" },
+  { word: "band", korean: "n. 밴드", eng_def: "a group of musicians who play music together", example: "Ben plays the guitar in a rock band.", audio: "band.wav" },
+  { word: "by one's side", korean: "좌우에, 옆에", eng_def: "close or beside someone", example: "She keeps a family photo by her side at work.", audio: "by_one_s_side.wav" },
+  { word: "each", korean: "a. 각각의", eng_def: "every one of two or more things or people", example: "The teacher always gives candies to each student.", audio: "each.wav" },
+  { word: "even", korean: "ad. ~도, 심지어", eng_def: "used to show that something is surprising", example: "He even goes to home with me.", audio: "even.wav" },
+  { word: "guide", korean: "n. 안내인", eng_def: "a person who shows the way and often gives information", example: "The guide leads us through the forest.", audio: "guide.wav" },
+  { word: "gym", korean: "n. 체육관", eng_def: "a building or room that has equipment for doing physical exercises", example: "Tim goes to the gym every day.", audio: "gym.wav" },
+  { word: "hearing", korean: "n. 청각", eng_def: "the ability to hear", example: "Loud music is not good for your hearing.", audio: "hearing.wav" },
+  { word: "keyboard", korean: "n. 키보드", eng_def: "a musical instrument with keys like a piano", example: "She carries her own keyboard for the concert.", audio: "keyboard.wav" },
+  { word: "laugh", korean: "v. 웃다", eng_def: "to make a sound with your voice because you think something is funny", example: "She laughs at my funny story.", audio: "laugh.wav" },
+  { word: "magic", korean: "n. 마술", eng_def: "the use of tricks to entertain people", example: "My brother loves magic shows.", audio: "magic.wav" },
+  { word: "match", korean: "v. 연결시키다", eng_def: "to put two things together in a suitable way", example: "Match the words with the pictures.", audio: "match.wav" },
+  { word: "memo", korean: "n. 메모", eng_def: "a usually brief written message from someone", example: "Mom leaves a daily memo for me.", audio: "memo.wav" },
+  { word: "neighbor", korean: "n. 이웃", eng_def: "someone who lives near you", example: "My neighbor has two dogs.", audio: "neighbor.wav" },
+  { word: "nod", korean: "v. 끄덕이다", eng_def: "to move the head down and then up again quickly", example: "He often nods his head along to music.", audio: "nod.wav" },
+  { word: "person", korean: "n. 사람, 개인", eng_def: "a man, woman, or child", example: "The person with the hat is my cousin James.", audio: "person.wav" },
+  { word: "pop", korean: "a. 팝 (음악)의", eng_def: "of or relating to popular music", example: "I love pop songs a lot.", audio: "pop.wav" },
+  { word: "practice", korean: "v. 연습하다 / n. 연습", eng_def: "to do something regularly so that you can do it better", example: "Grace practices the piano every day.", audio: "practice.wav" },
+  { word: "special", korean: "a. 특별한", eng_def: "different from ordinary things and better in some way", example: "The restaurant has a special menu for children.", audio: "special.wav" },
+  { word: "subject", korean: "n. 과목", eng_def: "an area of knowledge or study, especially one that you study at school", example: "History is my favorite subject.", audio: "subject.wav" },
+  { word: "tulip", korean: "n. 튤립", eng_def: "a large, bright flower that is shaped like a cup", example: "His garden is full of beautiful tulips.", audio: "tulip.wav" },
+  { word: "wide", korean: "a. 넓은", eng_def: "with a great distance from side to side; large", example: "There is a wide table in the kitchen.", audio: "wide.wav" }
+];
+
+// ===== AUDIO ENGINE (Web Audio API) =====
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+function playTone(freq, duration, type = 'sine', volume = 0.3) {
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  osc.type = type;
+  osc.frequency.value = freq;
+  gain.gain.setValueAtTime(volume, audioCtx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+  osc.connect(gain).connect(audioCtx.destination);
+  osc.start();
+  osc.stop(audioCtx.currentTime + duration);
+}
+
+function playCorrectSound() {
+  playTone(523, 0.12, 'sine', 0.25);
+  setTimeout(() => playTone(659, 0.12, 'sine', 0.25), 100);
+  setTimeout(() => playTone(784, 0.2, 'sine', 0.3), 200);
+  setTimeout(() => playTone(1047, 0.35, 'sine', 0.25), 300);
+}
+
+function playWrongSound() {
+  playTone(300, 0.2, 'sawtooth', 0.2);
+  setTimeout(() => playTone(200, 0.4, 'sawtooth', 0.25), 150);
+}
+
+function playExplosionSound() {
+  const bufferSize = audioCtx.sampleRate * 0.8;
+  const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+  const data = buffer.getChannelData(0);
+  for (let i = 0; i < bufferSize; i++) {
+    data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / bufferSize, 2);
+  }
+  const source = audioCtx.createBufferSource();
+  source.buffer = buffer;
+  const gain = audioCtx.createGain();
+  gain.gain.setValueAtTime(0.5, audioCtx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.8);
+  source.connect(gain).connect(audioCtx.destination);
+  source.start();
+}
+
+function playTickSound() {
+  playTone(800, 0.05, 'square', 0.08);
+}
+
+function playDefuseSound() {
+  playTone(880, 0.1, 'sine', 0.15);
+  setTimeout(() => playTone(1100, 0.15, 'sine', 0.2), 80);
+  setTimeout(() => playTone(1320, 0.3, 'triangle', 0.15), 160);
+}
+
+function playComboSound(level) {
+  const base = 600 + level * 100;
+  playTone(base, 0.08, 'sine', 0.2);
+  setTimeout(() => playTone(base + 200, 0.08, 'sine', 0.2), 60);
+  setTimeout(() => playTone(base + 400, 0.15, 'sine', 0.25), 120);
+}
+
+function playCountdownUrgent() {
+  playTone(1000, 0.06, 'square', 0.15);
+}
+
+// ===== PRONUNCIATION AUDIO =====
+let currentPronAudio = null;
+function playPronunciation(audioFile) {
+  if (currentPronAudio) { currentPronAudio.pause(); }
+  const key = audioFile.replace('.wav', '');
+  // Use embedded base64 data if available, fallback to file path
+  const src = (typeof AUDIO_DATA !== 'undefined' && AUDIO_DATA[key])
+    ? AUDIO_DATA[key]
+    : 'audio/' + audioFile;
+  currentPronAudio = new Audio(src);
+  currentPronAudio.play().catch(() => {
+    announce('발음 파일을 불러올 수 없습니다.');
+  });
+}
+
+// ===== PARTICLES =====
+function spawnExplosionParticles(cx, cy) {
+  const colors = ['#ff6b35', '#ffd700', '#ff1744', '#ff9100', '#fff'];
+  for (let i = 0; i < 30; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    p.style.left = cx + 'px';
+    p.style.top = cy + 'px';
+    p.style.background = colors[Math.floor(Math.random() * colors.length)];
+    p.style.width = p.style.height = (6 + Math.random() * 10) + 'px';
+    document.body.appendChild(p);
+    const angle = Math.random() * Math.PI * 2;
+    const dist = 100 + Math.random() * 200;
+    const dx = Math.cos(angle) * dist;
+    const dy = Math.sin(angle) * dist;
+    p.animate([
+      { transform: 'translate(0,0) scale(1)', opacity: 1 },
+      { transform: `translate(${dx}px, ${dy}px) scale(0)`, opacity: 0 }
+    ], { duration: 600 + Math.random() * 400, easing: 'ease-out' })
+    .onfinish = () => p.remove();
+  }
+}
+
+function spawnConfetti() {
+  const colors = ['#ff6b35', '#ffd700', '#00e676', '#2196f3', '#e040fb', '#ff1744'];
+  for (let i = 0; i < 50; i++) {
+    const c = document.createElement('div');
+    c.className = 'confetti';
+    c.style.left = Math.random() * window.innerWidth + 'px';
+    c.style.top = -20 + 'px';
+    c.style.background = colors[Math.floor(Math.random() * colors.length)];
+    c.style.transform = `rotate(${Math.random()*360}deg)`;
+    document.body.appendChild(c);
+    c.animate([
+      { transform: `translateY(0) rotate(0deg)`, opacity: 1 },
+      { transform: `translateY(${window.innerHeight + 40}px) rotate(${360+Math.random()*720}deg)`, opacity: 0.7 }
+    ], { duration: 1500 + Math.random() * 1500, easing: 'ease-in', delay: Math.random() * 500 })
+    .onfinish = () => c.remove();
+  }
+}
+
+// ===== SCREEN READER =====
+function announce(msg) {
+  const el = document.getElementById('sr-announce');
+  el.textContent = '';
+  requestAnimationFrame(() => { el.textContent = msg; });
+}
+
+// ===== GAME STATE =====
+let gameState = 'start'; // start, playing, answered, end
+let currentIndex = 0;
+let score = 0;
+let combo = 0;
+let maxCombo = 0;
+let correctCount = 0;
+let shuffledVocab = [];
+let timerInterval = null;
+let timeLeft = 0;
+let tickCounter = 0;
+
+const $ = id => document.getElementById(id);
+const choiceBtns = document.querySelectorAll('.choice-btn');
+
+function getTimeLimit(idx) {
+  if (idx < 7) return 15;
+  if (idx < 14) return 12;
+  return 9;
+}
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function startGame() {
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  score = 0;
+  combo = 0;
+  maxCombo = 0;
+  correctCount = 0;
+  currentIndex = 0;
+  shuffledVocab = shuffle(VOCAB);
+  $('start-screen').style.display = 'none';
+  $('end-screen').style.display = 'none';
+  $('game-screen').style.display = 'block';
+  updateScore();
+  loadQuestion();
+}
+
+function updateScore() {
+  $('score-val').textContent = score;
+  const comboEl = $('combo-display');
+  if (combo >= 2) {
+    comboEl.textContent = `COMBO x${combo}`;
+    comboEl.classList.add('active');
+  } else {
+    comboEl.classList.remove('active');
+  }
+}
+
+function loadQuestion() {
+  gameState = 'playing';
+  const item = shuffledVocab[currentIndex];
+  $('progress-text').textContent = `${currentIndex + 1} / ${shuffledVocab.length}`;
+
+  // Clean up definition - strip pos prefix
+  let def = item.eng_def.replace(/^[a-z]+\.\s*/i, '');
+  $('definition-text').textContent = def;
+
+  // Generate choices: correct + 3 random wrong
+  const wrongPool = VOCAB.filter(v => v.word !== item.word);
+  const wrongChoices = shuffle(wrongPool).slice(0, 3);
+  const allChoices = shuffle([item, ...wrongChoices]);
+
+  choiceBtns.forEach((btn, i) => {
+    btn.querySelector('.choice-text').textContent = allChoices[i].word;
+    btn.dataset.word = allChoices[i].word;
+    btn.dataset.correct = allChoices[i].word === item.word ? '1' : '0';
+    btn.className = 'choice-btn';
+    btn.disabled = false;
+  });
+
+  // Hide word info & next
+  $('word-info').style.display = 'none';
+  $('next-btn').style.display = 'none';
+
+  // Reset bomb
+  $('bomb-visual').className = 'bomb-visual';
+
+  // Start timer
+  const limit = getTimeLimit(currentIndex);
+  timeLeft = limit * 10; // tenths of second
+  tickCounter = 0;
+  $('timer-fill').style.width = '100%';
+  $('timer-text').textContent = limit + 's';
+  $('timer-fill').style.background = 'linear-gradient(90deg, var(--wrong), var(--accent), var(--accent2))';
+
+  clearInterval(timerInterval);
+  timerInterval = setInterval(() => {
+    timeLeft--;
+    tickCounter++;
+    const pct = (timeLeft / (limit * 10)) * 100;
+    $('timer-fill').style.width = pct + '%';
+    $('timer-text').textContent = (timeLeft / 10).toFixed(1) + 's';
+
+    // Ticking sound
+    if (tickCounter % 10 === 0) playTickSound();
+    // Urgent ticking when < 3s
+    if (timeLeft <= 30 && timeLeft > 0 && tickCounter % 5 === 0) {
+      playCountdownUrgent();
+      $('timer-fill').style.background = `linear-gradient(90deg, var(--wrong), #ff4444)`;
+    }
+
+    // Fuse shrink
+    const fuseH = 40 * (timeLeft / (limit * 10));
+    $('bomb-fuse').style.height = Math.max(0, fuseH) + 'px';
+    $('bomb-spark').style.top = (5 + (40 - fuseH)) + 'px';
+
+    if (timeLeft <= 0) {
+      clearInterval(timerInterval);
+      handleTimeUp();
+    }
+  }, 100);
+
+  // Focus and announce
+  $('def-card').focus();
+  announce(`문제 ${currentIndex + 1}. 영영 풀이: ${def}. 1번부터 4번까지 선택하세요. 제한 시간 ${limit}초.`);
+}
+
+function handleTimeUp() {
+  gameState = 'answered';
+  combo = 0;
+
+  // Find correct button & highlight
+  choiceBtns.forEach(btn => {
+    btn.disabled = true;
+    if (btn.dataset.correct === '1') btn.classList.add('correct');
+  });
+
+  // Explode bomb
+  const bv = $('bomb-visual');
+  bv.classList.add('exploding');
+  const rect = bv.getBoundingClientRect();
+  spawnExplosionParticles(rect.left + rect.width/2, rect.top + rect.height/2);
+  playExplosionSound();
+
+  // Shake screen
+  $('game-screen').style.animation = 'shake 0.5s';
+  setTimeout(() => $('game-screen').style.animation = '', 500);
+
+  // Banner
+  showBanner('BOOM!', 'var(--wrong)');
+
+  // Show word info
+  showWordInfo();
+  announce(`시간 초과! 폭탄이 터졌습니다. 정답은 ${shuffledVocab[currentIndex].word}입니다.`);
+}
+
+function handleAnswer(idx) {
+  if (gameState !== 'playing') return;
+  gameState = 'answered';
+  clearInterval(timerInterval);
+
+  const btn = choiceBtns[idx];
+  const isCorrect = btn.dataset.correct === '1';
+  const item = shuffledVocab[currentIndex];
+
+  choiceBtns.forEach(b => {
+    b.disabled = true;
+    if (b.dataset.correct === '1') b.classList.add('correct');
+  });
+
+  if (isCorrect) {
+    combo++;
+    if (combo > maxCombo) maxCombo = combo;
+    correctCount++;
+    const timeBonus = Math.ceil(timeLeft / 10);
+    const comboMultiplier = Math.min(combo, 5);
+    const points = (10 + timeBonus) * comboMultiplier;
+    score += points;
+
+    playDefuseSound();
+    if (combo >= 2) playComboSound(combo);
+
+    $('bomb-visual').classList.add('defused');
+    showBanner(combo >= 3 ? `COMBO x${combo}!` : 'DEFUSED!', 'var(--correct)');
+    spawnConfetti();
+    announce(`정답! ${item.word}. ${points}점 획득. ${combo >= 2 ? '콤보 ' + combo + '!' : ''}`);
+  } else {
+    combo = 0;
+    btn.classList.add('wrong');
+
+    const bv = $('bomb-visual');
+    bv.classList.add('exploding');
+    const rect = bv.getBoundingClientRect();
+    spawnExplosionParticles(rect.left + rect.width/2, rect.top + rect.height/2);
+    playExplosionSound();
+
+    $('game-screen').style.animation = 'shake 0.5s';
+    setTimeout(() => $('game-screen').style.animation = '', 500);
+
+    showBanner('BOOM!', 'var(--wrong)');
+    announce(`오답! 정답은 ${item.word}입니다.`);
+  }
+
+  updateScore();
+  showWordInfo();
+}
+
+function showBanner(text, color) {
+  const b = $('result-banner');
+  b.textContent = text;
+  b.style.color = color;
+  b.classList.add('show');
+  setTimeout(() => b.classList.remove('show'), 1200);
+}
+
+function showWordInfo() {
+  const item = shuffledVocab[currentIndex];
+  $('info-word').textContent = item.word;
+  $('info-korean').textContent = item.korean;
+  $('info-example').textContent = item.example;
+  $('word-info').style.display = 'block';
+  $('next-btn').style.display = 'block';
+
+  setTimeout(() => {
+    $('next-btn').focus();
+  }, 300);
+}
+
+function nextQuestion() {
+  currentIndex++;
+  if (currentIndex >= shuffledVocab.length) {
+    showEndScreen();
+  } else {
+    loadQuestion();
+  }
+}
+
+function showEndScreen() {
+  gameState = 'end';
+  $('game-screen').style.display = 'none';
+  $('end-screen').style.display = 'block';
+  $('final-score').textContent = score;
+  const pct = Math.round((correctCount / VOCAB.length) * 100);
+  $('final-stats').innerHTML =
+    `정답: ${correctCount} / ${VOCAB.length} (${pct}%)<br>` +
+    `최고 콤보: x${maxCombo}`;
+  $('restart-btn').focus();
+
+  spawnConfetti();
+  setTimeout(spawnConfetti, 700);
+
+  // Victory or consolation sound
+  if (pct >= 70) {
+    [0,100,200,300,400].forEach((d,i) =>
+      setTimeout(() => playTone(523*(1+i*0.12), 0.2, 'sine', 0.2), d));
+  } else {
+    playTone(350, 0.5, 'triangle', 0.15);
+  }
+  announce(`게임 종료! 최종 점수 ${score}점. 정답 ${correctCount}개 중 ${VOCAB.length}개. 최고 콤보 ${maxCombo}.`);
+}
+
+// ===== EVENT LISTENERS =====
+$('start-btn').addEventListener('click', startGame);
+$('restart-btn').addEventListener('click', startGame);
+$('next-btn').addEventListener('click', nextQuestion);
+$('pron-btn').addEventListener('click', () => {
+  playPronunciation(shuffledVocab[currentIndex].audio);
+});
+
+choiceBtns.forEach((btn, i) => {
+  btn.addEventListener('click', () => handleAnswer(i));
+  // Prevent Enter key from triggering next-question via event bubbling
+  btn.addEventListener('keydown', e => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      e.stopPropagation();
+      handleAnswer(i);
+    }
+  });
+});
+
+// Global keyboard handler
+document.addEventListener('keydown', e => {
+  // Prevent default for game keys
+  if (['1','2','3','4',' ','r','R'].includes(e.key)) {
+    // Don't prevent if focus is on a non-game element
+  }
+
+  if (e.key === ' ' || e.key === 'Spacebar') {
+    e.preventDefault();
+    if (gameState === 'start') {
+      startGame();
+    } else if (gameState === 'answered') {
+      nextQuestion();
+    } else if (gameState === 'end') {
+      startGame();
+    }
+  }
+
+  if (gameState === 'playing') {
+    if (e.key >= '1' && e.key <= '4') {
+      e.preventDefault();
+      handleAnswer(parseInt(e.key) - 1);
+    }
+  }
+
+  if (gameState === 'answered' && (e.key === 'r' || e.key === 'R')) {
+    e.preventDefault();
+    playPronunciation(shuffledVocab[currentIndex].audio);
+  }
+});
+
+// Prevent Space on buttons from double-firing
+document.querySelectorAll('button').forEach(btn => {
+  btn.addEventListener('keydown', e => {
+    if (e.key === ' ') e.preventDefault();
+  });
+});
+</script>
+</body>
+</html>
