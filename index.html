@@ -488,28 +488,28 @@ body {
 <script>
 // ===== VOCABULARY DATA =====
 const VOCAB = [
-  { word: "all the time", korean: "내내, 아주 자주", eng_def: "at all times; continuously or very often", example: "He forgets his homework all the time.", audio: "all_the_time.wav" },
-  { word: "band", korean: "n. 밴드", eng_def: "a group of musicians who play music together", example: "Ben plays the guitar in a rock band.", audio: "band.wav" },
-  { word: "by one's side", korean: "좌우에, 옆에", eng_def: "close or beside someone", example: "She keeps a family photo by her side at work.", audio: "by_one_s_side.wav" },
-  { word: "each", korean: "a. 각각의", eng_def: "every one of two or more things or people", example: "The teacher always gives candies to each student.", audio: "each.wav" },
-  { word: "even", korean: "ad. ~도, 심지어", eng_def: "used to show that something is surprising", example: "He even goes to home with me.", audio: "even.wav" },
-  { word: "guide", korean: "n. 안내인", eng_def: "a person who shows the way and often gives information", example: "The guide leads us through the forest.", audio: "guide.wav" },
-  { word: "gym", korean: "n. 체육관", eng_def: "a building or room that has equipment for doing physical exercises", example: "Tim goes to the gym every day.", audio: "gym.wav" },
-  { word: "hearing", korean: "n. 청각", eng_def: "the ability to hear", example: "Loud music is not good for your hearing.", audio: "hearing.wav" },
-  { word: "keyboard", korean: "n. 키보드", eng_def: "a musical instrument with keys like a piano", example: "She carries her own keyboard for the concert.", audio: "keyboard.wav" },
-  { word: "laugh", korean: "v. 웃다", eng_def: "to make a sound with your voice because you think something is funny", example: "She laughs at my funny story.", audio: "laugh.wav" },
-  { word: "magic", korean: "n. 마술", eng_def: "the use of tricks to entertain people", example: "My brother loves magic shows.", audio: "magic.wav" },
-  { word: "match", korean: "v. 연결시키다", eng_def: "to put two things together in a suitable way", example: "Match the words with the pictures.", audio: "match.wav" },
-  { word: "memo", korean: "n. 메모", eng_def: "a usually brief written message from someone", example: "Mom leaves a daily memo for me.", audio: "memo.wav" },
-  { word: "neighbor", korean: "n. 이웃", eng_def: "someone who lives near you", example: "My neighbor has two dogs.", audio: "neighbor.wav" },
-  { word: "nod", korean: "v. 끄덕이다", eng_def: "to move the head down and then up again quickly", example: "He often nods his head along to music.", audio: "nod.wav" },
-  { word: "person", korean: "n. 사람, 개인", eng_def: "a man, woman, or child", example: "The person with the hat is my cousin James.", audio: "person.wav" },
-  { word: "pop", korean: "a. 팝 (음악)의", eng_def: "of or relating to popular music", example: "I love pop songs a lot.", audio: "pop.wav" },
-  { word: "practice", korean: "v. 연습하다 / n. 연습", eng_def: "to do something regularly so that you can do it better", example: "Grace practices the piano every day.", audio: "practice.wav" },
-  { word: "special", korean: "a. 특별한", eng_def: "different from ordinary things and better in some way", example: "The restaurant has a special menu for children.", audio: "special.wav" },
-  { word: "subject", korean: "n. 과목", eng_def: "an area of knowledge or study, especially one that you study at school", example: "History is my favorite subject.", audio: "subject.wav" },
-  { word: "tulip", korean: "n. 튤립", eng_def: "a large, bright flower that is shaped like a cup", example: "His garden is full of beautiful tulips.", audio: "tulip.wav" },
-  { word: "wide", korean: "a. 넓은", eng_def: "with a great distance from side to side; large", example: "There is a wide table in the kitchen.", audio: "wide.wav" }
+  { word: "all the time", korean: "내내, 아주 자주", eng_def: "at all times; continuously or very often", example: "He forgets his homework all the time.", audio: "all_the_time.wav", def_audio: "def_all_the_time.wav" },
+  { word: "band", korean: "n. 밴드", eng_def: "a group of musicians who play music together", example: "Ben plays the guitar in a rock band.", audio: "band.wav", def_audio: "def_band.wav" },
+  { word: "by one's side", korean: "좌우에, 옆에", eng_def: "close or beside someone", example: "She keeps a family photo by her side at work.", audio: "by_one_s_side.wav", def_audio: "def_by_one_s_side.wav" },
+  { word: "each", korean: "a. 각각의", eng_def: "every one of two or more things or people", example: "The teacher always gives candies to each student.", audio: "each.wav", def_audio: "def_each.wav" },
+  { word: "even", korean: "ad. ~도, 심지어", eng_def: "used to show that something is surprising", example: "He even goes to home with me.", audio: "even.wav", def_audio: "def_even.wav" },
+  { word: "guide", korean: "n. 안내인", eng_def: "a person who shows the way and often gives information", example: "The guide leads us through the forest.", audio: "guide.wav", def_audio: "def_guide.wav" },
+  { word: "gym", korean: "n. 체육관", eng_def: "a building or room that has equipment for doing physical exercises", example: "Tim goes to the gym every day.", audio: "gym.wav", def_audio: "def_gym.wav" },
+  { word: "hearing", korean: "n. 청각", eng_def: "the ability to hear", example: "Loud music is not good for your hearing.", audio: "hearing.wav", def_audio: "def_hearing.wav" },
+  { word: "keyboard", korean: "n. 키보드", eng_def: "a musical instrument with keys like a piano", example: "She carries her own keyboard for the concert.", audio: "keyboard.wav", def_audio: "def_keyboard.wav" },
+  { word: "laugh", korean: "v. 웃다", eng_def: "to make a sound with your voice because you think something is funny", example: "She laughs at my funny story.", audio: "laugh.wav", def_audio: "def_laugh.wav" },
+  { word: "magic", korean: "n. 마술", eng_def: "the use of tricks to entertain people", example: "My brother loves magic shows.", audio: "magic.wav", def_audio: "def_magic.wav" },
+  { word: "match", korean: "v. 연결시키다", eng_def: "to put two things together in a suitable way", example: "Match the words with the pictures.", audio: "match.wav", def_audio: "def_match.wav" },
+  { word: "memo", korean: "n. 메모", eng_def: "a usually brief written message from someone", example: "Mom leaves a daily memo for me.", audio: "memo.wav", def_audio: "def_memo.wav" },
+  { word: "neighbor", korean: "n. 이웃", eng_def: "someone who lives near you", example: "My neighbor has two dogs.", audio: "neighbor.wav", def_audio: "def_neighbor.wav" },
+  { word: "nod", korean: "v. 끄덕이다", eng_def: "to move the head down and then up again quickly", example: "He often nods his head along to music.", audio: "nod.wav", def_audio: "def_nod.wav" },
+  { word: "person", korean: "n. 사람, 개인", eng_def: "a man, woman, or child", example: "The person with the hat is my cousin James.", audio: "person.wav", def_audio: "def_person.wav" },
+  { word: "pop", korean: "a. 팝 (음악)의", eng_def: "of or relating to popular music", example: "I love pop songs a lot.", audio: "pop.wav", def_audio: "def_pop.wav" },
+  { word: "practice", korean: "v. 연습하다 / n. 연습", eng_def: "to do something regularly so that you can do it better", example: "Grace practices the piano every day.", audio: "practice.wav", def_audio: "def_practice.wav" },
+  { word: "special", korean: "a. 특별한", eng_def: "different from ordinary things and better in some way", example: "The restaurant has a special menu for children.", audio: "special.wav", def_audio: "def_special.wav" },
+  { word: "subject", korean: "n. 과목", eng_def: "an area of knowledge or study, especially one that you study at school", example: "History is my favorite subject.", audio: "subject.wav", def_audio: "def_subject.wav" },
+  { word: "tulip", korean: "n. 튤립", eng_def: "a large, bright flower that is shaped like a cup", example: "His garden is full of beautiful tulips.", audio: "tulip.wav", def_audio: "def_tulip.wav" },
+  { word: "wide", korean: "a. 넓은", eng_def: "with a great distance from side to side; large", example: "There is a wide table in the kitchen.", audio: "wide.wav", def_audio: "def_wide.wav" }
 ];
 
 // ===== AUDIO ENGINE (Web Audio API) =====
@@ -578,18 +578,17 @@ function playCountdownUrgent() {
 
 // ===== PRONUNCIATION AUDIO =====
 let currentPronAudio = null;
-function playPronunciation(audioFile) {
+function playAudioFile(audioFile) {
   if (currentPronAudio) { currentPronAudio.pause(); }
   const key = audioFile.replace('.wav', '');
-  // Use embedded base64 data if available, fallback to file path
   const src = (typeof AUDIO_DATA !== 'undefined' && AUDIO_DATA[key])
     ? AUDIO_DATA[key]
     : 'audio/' + audioFile;
   currentPronAudio = new Audio(src);
-  currentPronAudio.play().catch(() => {
-    announce('발음 파일을 불러올 수 없습니다.');
-  });
+  currentPronAudio.play().catch(() => {});
 }
+function playPronunciation(audioFile) { playAudioFile(audioFile); }
+function playDefinitionAudio(audioFile) { playAudioFile(audioFile); }
 
 // ===== PARTICLES =====
 function spawnExplosionParticles(cx, cy) {
@@ -759,9 +758,10 @@ function loadQuestion() {
     }
   }, 100);
 
-  // Focus and announce
+  // Focus, announce, and auto-play definition audio
   $('def-card').focus();
   announce(`문제 ${currentIndex + 1}. 영영 풀이: ${def}. 1번부터 4번까지 선택하세요. 제한 시간 ${limit}초.`);
+  if (item.def_audio) { playDefinitionAudio(item.def_audio); }
 }
 
 function handleTimeUp() {
