@@ -448,7 +448,7 @@ body {
       <div class="timer-bar-bg" role="progressbar" aria-label="남은 시간" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100">
         <div class="timer-bar-fill" id="timer-fill"></div>
       </div>
-      <div class="timer-text" id="timer-text">15s</div>
+      <div class="timer-text" id="timer-text">10s</div>
     </div>
   </div>
 
@@ -654,9 +654,9 @@ const $ = id => document.getElementById(id);
 const choiceBtns = document.querySelectorAll('.choice-btn');
 
 function getTimeLimit(idx) {
-  if (idx < 7) return 15;
-  if (idx < 14) return 12;
-  return 9;
+  if (idx < 7) return 10;
+  if (idx < 14) return 8;
+  return 6;
 }
 
 function shuffle(arr) {
