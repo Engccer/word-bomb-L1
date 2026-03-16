@@ -908,9 +908,8 @@ $('pron-btn').addEventListener('click', () => {
 
 choiceBtns.forEach((btn, i) => {
   btn.addEventListener('click', () => handleAnswer(i));
-  // Prevent Enter key from triggering next-question via event bubbling
   btn.addEventListener('keydown', e => {
-    if (e.key === 'Enter') {
+    if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
       e.stopPropagation();
       handleAnswer(i);
