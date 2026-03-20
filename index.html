@@ -408,6 +408,34 @@ body {
   60% { transform: translateX(-5px); }
   80% { transform: translateX(5px); }
 }
+
+/* ===== MOBILE RESPONSIVE ===== */
+@media (max-width: 600px) {
+  #start-screen h1 { font-size: 3rem; }
+  .bomb-icon { font-size: 4rem; }
+  .start-btn { font-size: 1.5rem; padding: 0.5em 1.5em; }
+  #game-screen { padding: 0.8em; }
+  .top-bar { margin-bottom: 0.6em; }
+  .score-display { font-size: 1.3rem; }
+  .bomb-area { gap: 0.8em; margin-bottom: 0.8em; }
+  .bomb-visual { width: 80px; height: 80px; }
+  .bomb-body { width: 65px; height: 65px; left: 7px; }
+  .bomb-fuse { left: 35px; }
+  .bomb-spark { left: 32px; }
+  .def-card { padding: 1em; min-height: 70px; margin-bottom: 0.8em; }
+  .def-card .definition { font-size: 1.15rem; }
+  .choices { gap: 0.5em; }
+  .choice-btn { font-size: 1rem; padding: 0.7em 0.8em; min-height: 48px; }
+  .next-btn { font-size: 1.2rem; }
+  .word-info { padding: 0.8em 1em; }
+  .word-info .word-main { font-size: 1.5rem; }
+  .word-info .word-korean { font-size: 1rem; }
+  .word-info .word-example { font-size: 0.95rem; }
+  .pron-btn { min-height: 44px; }
+  .result-banner { font-size: 2.5rem; }
+  #end-screen h1 { font-size: 2.5rem; }
+  .final-score { font-size: 3rem; }
+}
 </style>
 <script src="audio_data.js"></script>
 </head>
@@ -422,9 +450,9 @@ body {
   <h1>WORD BOMB</h1>
   <p class="subtitle">Lesson 1 - New Words</p>
   <p style="color:#888; margin-bottom:1.5em; font-size:1.1rem;">영영 풀이를 읽고 올바른 단어를 맞추세요!</p>
-  <button class="start-btn" id="start-btn" autofocus>SPACE to START</button>
+  <button class="start-btn" id="start-btn" autofocus>START</button>
   <p style="color:#666; margin-top:1.5em; font-size:0.9rem;">
-    조작: <kbd>1</kbd>~<kbd>4</kbd> 선택 &nbsp;|&nbsp; <kbd>R</kbd> 발음 듣기 &nbsp;|&nbsp; <kbd>Space</kbd> 다음
+    <kbd>1</kbd>~<kbd>4</kbd> 선택 &nbsp;|&nbsp; <kbd>R</kbd> 발음 듣기 &nbsp;|&nbsp; <kbd>Space</kbd> 다음
   </p>
 </div>
 
@@ -470,7 +498,7 @@ body {
     <button class="pron-btn" id="pron-btn" aria-label="발음 듣기 (R키)">🔊 발음 듣기 (R)</button>
   </div>
 
-  <button class="next-btn" id="next-btn">SPACE &rarr; NEXT</button>
+  <button class="next-btn" id="next-btn">NEXT &rarr;</button>
 </div>
 
 <!-- RESULT BANNER -->
